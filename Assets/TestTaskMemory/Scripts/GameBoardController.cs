@@ -79,25 +79,33 @@ namespace Misuno.TestTaskMemory
 
         private IEnumerator CardTouch(CardController card)
         {
-            card.Open();
-
-
             if (openCard == null)
             {
                 openCard = card;
+                yield return card.Open();
             }
-            else if (openCard.Value == card.Value)
+            else if (openCard == card)
             {
-                yield return new WaitForSeconds(animationDelay);
-                openCard = null;
-                // TODO put disappear logic.
+                yield return card.Close();
             }
             else
             {
-                yield return new WaitForSeconds(animationDelay);
-                openCard.Close();
-                card.Close();
-                openCard = null;
+                yield return card.Open();
+
+                if (openCard.Value == card.Value)
+                {
+                    yield return new WaitForSeconds(animationDelay);
+                    openCard.Disappear();
+                    card.Disappear();
+                    openCard = null;
+                }
+                else
+                {
+                    yield return new WaitForSeconds(animationDelay);
+                    openCard.Close();
+                    openCard = null;
+                    yield return card.Close();
+                }
             }
 
             touchCoriutine = null;

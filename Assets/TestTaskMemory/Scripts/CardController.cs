@@ -4,12 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using UnityEngine.EventSystems;
+using DG.Tweening;
 
 namespace Misuno.TestTaskMemory
 {
     public class CardController : MonoBehaviour, IPointerClickHandler
     {
         public float animationSpeed = 1f;
+        public float disappearDuration;
 
         public GameObject cardFace;
 
@@ -47,23 +49,23 @@ namespace Misuno.TestTaskMemory
 
         #endregion
 
-        public void Open()
+        public Coroutine Open()
         {
-            RotateCard(true);
+            return RotateCard(true);
         }
 
-        public void Close()
+        public Coroutine Close()
         {
-            RotateCard(false); 
+            return RotateCard(false); 
         }
 
-        private void RotateCard(bool setOpen)
+        private Coroutine RotateCard(bool setOpen)
         {
             if (activeCoroutine != null)
             {
                 StopCoroutine(activeCoroutine);
             }
-            activeCoroutine = StartCoroutine(Rotate(animationSpeed, () => this.cardFace.SetActive(setOpen)));
+            return activeCoroutine = StartCoroutine(Rotate(animationSpeed, () => this.cardFace.SetActive(setOpen)));
         }
 
         private IEnumerator Rotate(float speed, Action finishAction)
@@ -91,6 +93,17 @@ namespace Misuno.TestTaskMemory
             Vector3 scale = transform.localScale;
             scale.x = Mathf.Clamp01(scale.x + speed * Time.deltaTime);
             transform.localScale = scale;
+        }
+
+        public void Disappear()
+        {
+            var myImages = GetComponentsInChildren<MaskableGraphic>();
+            foreach (var myImage in myImages)
+            {
+                myImage.raycastTarget = false;
+                DOTween.ToAlpha(() => myImage.color, a => myImage.color = a, 0, disappearDuration);
+            }
+            Destroy(gameObject, disappearDuration);
         }
     }
 }

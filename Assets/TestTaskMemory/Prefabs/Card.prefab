@@ -134,8 +134,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8fddd4b57f714261b388c2a7d0378d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animationDelay: 1
   animationSpeed: 5
+  disappearDuration: 1
   cardFace: {fileID: 1910979822065296}
 --- !u!114 &114849513592785074
 MonoBehaviour:

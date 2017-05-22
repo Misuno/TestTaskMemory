@@ -9,7 +9,6 @@ namespace Misuno.TestTaskMemory
 {
     public class CardController : MonoBehaviour, IPointerClickHandler
     {
-        public float animationDelay = 1f;
         public float animationSpeed = 1f;
 
         public GameObject cardFace;

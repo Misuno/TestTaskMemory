@@ -2418,6 +2418,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardPrefab: {fileID: 114542313553865296, guid: 1896ce3135a224db595156c5dc9a15aa,
     type: 2}
+  animationDelay: 1
 --- !u!1001 &1500775369
 Prefab:
   m_ObjectHideFlags: 0

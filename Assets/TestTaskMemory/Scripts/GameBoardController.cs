@@ -12,6 +12,7 @@ namespace Misuno.TestTaskMemory
 
         // Use this for initialization
         private List<Transform> slots = new List<Transform>();
+        private List<CardController> cards = new List<CardController>();
 
         private Coroutine touchCoriutine;
 
@@ -41,10 +42,23 @@ namespace Misuno.TestTaskMemory
 
         private void Start()
         {
+            GenerateCards();
+        }
+
+        void GenerateCards()
+        {
+            // Clean up.
+            if (cards.Count > 0)
+            {
+                cards.ForEach(card => Destroy(card.gameObject));
+                cards.Clear();
+            }
+
             var generatedCards = new List<CardController>();
 
             // Spawn cards.
             Slots.ForEach(slot => generatedCards.Add(Instantiate(cardPrefab, slot, false)));
+            cards.AddRange(generatedCards);
 
             // Set values for pairs.
             int valueForCard = 0;
@@ -60,7 +74,6 @@ namespace Misuno.TestTaskMemory
 
                 firstCard.Value = valueForCard;
                 secondCard.Value = valueForCard;
-
                 valueForCard++;
             }
 
@@ -75,7 +88,6 @@ namespace Misuno.TestTaskMemory
             
             touchCoriutine = StartCoroutine(CardTouch(card));
         }
-
 
         private IEnumerator CardTouch(CardController card)
         {
@@ -95,9 +107,12 @@ namespace Misuno.TestTaskMemory
                 if (openCard.Value == card.Value)
                 {
                     yield return new WaitForSeconds(animationDelay);
+                    cards.Remove(openCard);
                     openCard.Disappear();
-                    card.Disappear();
                     openCard = null;
+
+                    cards.Remove(card);
+                    card.Disappear();
                 }
                 else
                 {
@@ -109,6 +124,11 @@ namespace Misuno.TestTaskMemory
             }
 
             touchCoriutine = null;
+
+            if (cards.Count == 1)
+            {
+                GenerateCards();
+            }
         }
     }
 }

@@ -2,15 +2,85 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameBoardController : MonoBehaviour {
+namespace Misuno.TestTaskMemory
+{
+    public class GameBoardController : MonoBehaviour
+    {
+        public CardController cardPrefab;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+        // Use this for initialization
+        private List<Transform> slots = new List<Transform>();
+
+        public List<Transform> Slots
+        {
+            get
+            {
+                return slots;
+            }
+        }
+
+        private CardController openCard;
+
+        private void Awake()
+        {
+            World.board = this;
+
+            for (var i = 0; i < transform.childCount; ++i)
+            {
+                Transform row = transform.GetChild(i);
+                for (var j = 0; j < row.childCount; ++j)
+                {
+                    slots.Add(row.GetChild(j));
+                }
+            }
+        }
+
+        private void Start()
+        {
+            var generatedCards = new List<CardController>();
+
+            // Spawn cards.
+            Slots.ForEach(slot => generatedCards.Add(Instantiate(cardPrefab, slot, false)));
+
+            // Set values for pairs.
+            int valueForCard = 0;
+            while (generatedCards.Count > 1)
+            {
+                int index = Random.Range(0, generatedCards.Count);
+                CardController firstCard = generatedCards[index];
+                generatedCards.RemoveAt(index);
+
+                index = Random.Range(0, generatedCards.Count);
+                CardController secondCard = generatedCards[index];
+                generatedCards.RemoveAt(index);
+
+                firstCard.Value = valueForCard;
+                secondCard.Value = valueForCard;
+
+                valueForCard++;
+            }
+
+            // Last card is blank, ie. -1.
+            generatedCards[0].Value = -1;
+        }
+
+        public void CardTouched(CardController card)
+        {
+            card.Open();
+            if (openCard == null)
+            {
+                openCard = card;
+            }
+            else if (openCard.Value == card.Value)
+            {
+                // TODO put disappear logic.
+            }
+            else
+            {
+                openCard.Close();
+                card.Close();
+                openCard = null;
+            }
+        }
+    }
 }
